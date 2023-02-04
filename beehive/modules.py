@@ -76,7 +76,7 @@ class UpConvBlock(nn.Module):
         if n_conv > 1:
             layers += [
                 conv_bn_relu(
-                    in_channels=in_channels, out_channels=out_channels
+                    in_channels=out_channels, out_channels=out_channels
                 )
                 for _ in range(n_conv - 1)
             ]
@@ -102,11 +102,11 @@ class UpConvBlock(nn.Module):
                 in_channels=in_channels,
                 out_channels=out_channels,
                 kernel_size=4,
-                stride=1,
+                stride=2,
                 padding=1,
             )
 
-    def forawrd(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.block(x)
 
 
@@ -147,7 +147,7 @@ class UpScaleResNet(nn.Module):
                     bilinear=bilinear,
                 )
             )
-
+            in_ch = out_ch
         self.up_block = nn.Sequential(*layers)
 
     def __load_resnet_backbone(
@@ -170,7 +170,7 @@ class UpScaleResNet(nn.Module):
         backbone = resnet(weights="DEFAULT") if pretrained else resnet()
 
         # * remove the last avg pool and FC layer as we don't need them.
-        backbone = nn.Sequential(list(backbone.children())[:-2])
+        backbone = nn.Sequential(*list(backbone.children())[:-2])
 
         return backbone
 
