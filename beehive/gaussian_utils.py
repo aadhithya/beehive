@@ -1,3 +1,5 @@
+# * Source: https://github.com/xingyizhou/CenterNet/blob/a5a0483beb0f9e8705f6dc67d8817275369cfa7e/src/lib/utils/image.py
+# * related issue: https://github.com/xingyizhou/CenterNet/issues/251
 import numpy as np
 
 
