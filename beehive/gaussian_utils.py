@@ -40,7 +40,6 @@ def draw_umich_gaussian(heatmap, center, radius, k=1):
     gaussian = gaussian2D((diameter, diameter), sigma=diameter / 6)
 
     x, y = int(center[0]), int(center[1])
-    print(heatmap.shape)
     height, width = heatmap.shape[:2]
 
     left, right = min(x, radius), min(width - x, radius + 1)
