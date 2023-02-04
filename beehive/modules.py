@@ -211,7 +211,7 @@ class KeypointHead(nn.Module):
         layers.append(
             nn.Conv2d(
                 in_channels=in_ch,
-                out_channels=n_classes,
+                out_channels=n_classes + 2,
                 kernel_size=1,
             )
         )
