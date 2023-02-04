@@ -99,15 +99,36 @@ class BeehiveDataset(Dataset):
         )
 
         heat_map = np.zeros([1, lbl_h, lbl_w], dtype=np.float32)
-        centers_ds = (centers / self.down_stride).astype(np.int32)
-        centers_ds[:, 0] = np.clip(centers_ds[:, 0], 0, lbl_h - 1)
-        centers_ds[:, 1] = np.clip(centers_ds[:, 1], 0, lbl_w - 1)
+        # * centers_ds --> p/R
+        centers_ds = centers / self.down_stride
+        # * centers_ds_int --> floor(p/R) --> \tilde(p)
+        centers_ds_int = centers_ds.astype(np.int32)
+        centers_ds_int[:, 0] = np.clip(centers_ds_int[:, 0], 0, lbl_h - 1)
+        centers_ds_int[:, 1] = np.clip(centers_ds_int[:, 1], 0, lbl_w - 1)
 
-        for ix in range(len(centers_ds)):
+        for ix in range(len(centers_ds_int)):
             heat_map[0] = draw_umich_gaussian(
-                heat_map[0], centers_ds[ix], radius=2
+                heat_map[0], centers_ds_int[ix], radius=2
             )
             # heat_map = draw_msra_gaussian(heat_map, centers_ds[ix][::-1], 0.1)
 
         heat_map = torch.from_numpy(heat_map)
-        return img, heat_map
+        return img, heat_map, centers_ds
+
+
+def pad_collate_fn(data):
+    img, heatmap, centers = zip(*data)
+    img = torch.stack(img)
+    heatmap = torch.stack(heatmap)
+
+    cen_lens = [len(cen) for cen in centers]
+    max_len = max(cen_lens)
+
+    batch_size = len(heatmap)
+
+    new_centers = torch.ones(batch_size, max_len, 2) * -1
+
+    for ix, cen in enumerate(centers):
+        new_centers[ix, : len(cen)] = torch.from_numpy(cen)
+
+    return img, heatmap, new_centers
