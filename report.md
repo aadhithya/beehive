@@ -10,7 +10,7 @@ challenge is to automate the process of counting bees in a given image.
 - The CenterNet is designed to solve exactly the problem at hand - detect objects with centroid points.
 - The CenterNet has a keypoint detection loss, an offset loss and a task specific loss (bounding box regression, etc.). In this implementation, I use only the keypoint detection and offset loss, as we don't care about the bounding boxes of the detection.
 
-### 2.1. Network Architecture and Objective Functions
+## 2. Network Architecture and Objective Functions
 Here, I talk about the network archtecture and the reasons behind selecting the arch. I also discuss the objective functions and how this implementation differs from the original paper.
 
 - For the backbone, in the interest of keepint the model small, I use the pre-trained resnet 18 model. The paper uses Hourglass and resnet architectures.
@@ -19,16 +19,16 @@ Here, I talk about the network archtecture and the reasons behind selecting the 
 
 - Then I have a KeypointHead, with 2 conv-bn-relu layers followed by a 1x1 convolution layer to output `n_classes + 2` channels, for n_classes and the x-y offsets. The paper uses separate heads for both and also have extra heads for bbox regression.
 
-#### Objective Functions
+### Objective Functions
 - For the focal loss, I set `alpha = 7` and `beta = 5`.
 - The focal loss is weighed at 10 compared to 1 used in the paper.
 - I use L1 loss for the OffsetLoss, same as the paper.
 
-## 2 Results
-### 2.2.1 Qualitative Results
+## 3 Results
+### 3.1 Qualitative Results
 #### Valdation Set Outputs:
 
-    **Row 1: Input Image, Row 2: Ground Truth, Row 3: Detetctions**
+  **Row 1: Input Image, Row 2: Ground Truth, Row 3: Detetctions**
   ![](imgs/val-viz.png)
 
 #### Test Set Visualization
@@ -37,7 +37,7 @@ Here, I talk about the network archtecture and the reasons behind selecting the 
 
     ![](imgs/test_0.png)
     ![](imgs/test_1.png)
-### 2.2 Quantitative Results
+### 3.2 Quantitative Results
 - Model evaluated using mAP metric. Table shows results.
 - Since only centroids of the bees are known, a fixed bounding box of size 15x15 with the centroid at center was taken.
 
@@ -56,14 +56,15 @@ Here, I talk about the network archtecture and the reasons behind selecting the 
 | resnet34 | -0.583    |
 
 
-## 3. Takeaways
+## 4. Takeaways
 - At first glance the model's metric may look poor compared to the original implementation, but it is to be kept in mind that the original paper benifitted from (i) supervision from box-regression head and, (ii) lots of training data.
 - Since only centroids were available, this implementation only uses keypoint and offset losses.
 - Furthermore, looking at qualitative results suggests that the model is indeed able to detect the bees quite well.
 
-## 4. Training Details
 
-### 4.1 Hyperparameters
+## 5. Training Details
+
+### 5.1 Hyperparameters
 ```yml
 train_steps: 3000
 alpha_kp: 7
@@ -82,13 +83,13 @@ upsample_channels:
   - 128
   - 64
 ```
-### 4.2 Augmentations to data
+### 5.2 Augmentations to data
 - For training and validation set, the following augmentations were applied:
   - Random Flip
   - Random Scale [0.6, 1.4]
   - Random Crop [256, 256]
 
-### 4.3 Training Curves
+### 5.3 Training Curves
 #### Train loss
 
   ![Train Loss](imgs/train-loss-plot.png)
