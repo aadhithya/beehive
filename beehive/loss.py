@@ -17,9 +17,9 @@ class ModifiedFocalLoss:
 
     def __call__(self, target, preds) -> torch.Tensor:
         pos_idxs = (target == 1).float()
-        neg_idxs = (target < 1).float()
+        neg_idxs = (target == 0).float()
 
-        preds = torch.clamp(preds, 1e-14)
+        preds = torch.clamp(preds, 1e-10)
 
         preds_compl = 1 - preds
 
@@ -60,7 +60,7 @@ class OffsetLoss:
 
         o_hats = torch.stack(
             [
-                pred[1:, p_tilde[ix, :, 1], p_tilde[ix, :, 0]]
+                pred[..., p_tilde[ix, :, 1], p_tilde[ix, :, 0]]
                 for ix, pred in enumerate(preds)
             ]
         )
