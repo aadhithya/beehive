@@ -33,10 +33,10 @@ Here, I talk about the network archtecture and the reasons behind selecting the 
 
 #### Test Set Visualization
 
-  **NOTE**: Network inference was done on entire, full-res image without augmentations.
+**NOTE**: Network inference was done on entire, full-res image without augmentations.
 
-  ![](imgs/test_0.png)
-  ![](imgs/test_1.png)
+![](imgs/test_0.png)
+![](imgs/test_1.png)
 ### 3.2 Quantitative Results
 - Model evaluated using mAP metric. Table shows results.
 - Since only centroids of the bees are known, a fixed bounding box of size 15x15 with the centroid at center was taken.
