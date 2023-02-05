@@ -27,7 +27,6 @@ def hmap_nms(hmap, kernel_size: int = 3):
 
 def postprocess_preds(hmap, offsets, threshold=0.5, scale=4):
     b, c, h, w = hmap.shape
-    offsets = offsets
     scores = hmap_nms(hmap)
     pred_points = scores > threshold
 
