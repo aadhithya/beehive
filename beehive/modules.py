@@ -201,8 +201,8 @@ class KeypointHead(nn.Module):
                     conv_bn_relu(
                         in_channels=in_ch,
                         out_channels=out_ch,
-                        kernel_size=1,
-                        padding=0,
+                        kernel_size=3,
+                        padding=1,
                     )
                 ]
                 in_ch = out_ch
