@@ -1,4 +1,5 @@
 import os
+import urllib.request
 from typing import Optional, Tuple
 
 import albumentations as A
@@ -12,6 +13,9 @@ from torchvision.utils import draw_segmentation_masks
 
 from beehive.model import CenterNet
 from beehive.postprocess import postprocess_preds
+
+TRCH_MODEL_URL = "https://github.com/aadhithya/beehive/releases/download/weights/centernet-bees.ckpt"
+MODEL_DL_PATH = "./ckpt/centernet-bees.ckpt"
 
 
 def show_result(img, mask, scale):
@@ -72,6 +76,7 @@ def run_inference(
     ckpt_path: Optional[str] = "./ckpt/v38.ckpt",
     scale: Optional[float] = 1.0,
     show: Optional[bool] = True,
+    dl: Optional[bool] = False,
     v: Optional[bool] = True,
 ):
     if not v:
@@ -81,6 +86,22 @@ def run_inference(
     logger.info(f"Loaded Image: {img_path}")
     logger.info(f"image shape: {img.shape}")
 
+    if not os.path.exists(ckpt_path):
+        logger.warning(f"Checkpoint does not exist in {ckpt_path}.")
+        if dl:
+            if os.path.exists(MODEL_DL_PATH):
+                logger.info(f"Model Cache found: {MODEL_DL_PATH}")
+            else:
+                logger.info(f"Downloading model from: {TRCH_MODEL_URL}")
+                os.makedirs("./ckpt/", exist_ok=True)
+                urllib.request.urlretrieve(
+                    TRCH_MODEL_URL, filename=MODEL_DL_PATH
+                )
+                logger.info(f"Downloaded to: {MODEL_DL_PATH}")
+            ckpt_path = MODEL_DL_PATH
+        else:
+            logger.info("You can download model by passing the -dl flag.")
+            raise FileNotFoundError(ckpt_path)
     model = CenterNet.load_from_checkpoint(checkpoint_path=ckpt_path)
     _ = model.eval()
     logger.info(f"Loaded model from ckpt: {ckpt_path}")

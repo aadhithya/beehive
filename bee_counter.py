@@ -11,6 +11,7 @@ To run  inference without installing beehive,
 """
 import argparse
 import os
+import urllib.request
 from typing import Dict
 
 import matplotlib.pyplot as plt
@@ -20,15 +21,31 @@ from numpy.lib.stride_tricks import as_strided
 from scipy import ndimage as ndi
 from skimage import io
 
+ONNX_MODEL_URL = "https://github.com/aadhithya/beehive/releases/download/weights/centernet-bees.onnx"
+MODEL_DL_PATH = "./ckpt/bees-center-net.onnx"
+
 
 class BeeCounter:
     def __init__(self, ckpt_path: str = "./ckpt/export/v38.onnx") -> None:
+        if not os.path.exists(ckpt_path):
+            print(
+                f"\033[93mWARNING\033[0m: chekppoint does not exist in {ckpt_path}"
+            )
+            if os.path.exists(MODEL_DL_PATH):
+                print(f"Model cache found: {MODEL_DL_PATH}")
+                ckpt_path = MODEL_DL_PATH
+            else:
+                print(f"Downloading ckpt from: {ONNX_MODEL_URL}")
+                os.makedirs("./ckpt/", exist_ok=True)
+                ckpt_path = "./ckpt/bees-center-net.onnx"
+                urllib.request.urlretrieve(ONNX_MODEL_URL, filename=ckpt_path)
+                print(f"Model downloaded to: {ckpt_path}")
+
         self.session = ort.InferenceSession(
             ckpt_path,
             providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
         )
 
-    # @staticmethod
     def pool2d(self, A, kernel_size, stride, padding=0, pool_mode="max"):
         """
         2D Pooling
