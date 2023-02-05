@@ -5,7 +5,7 @@ of bees, along with ground truth labels containing dots at the centroids of each
 challenge is to automate the process of counting bees in a given image.
 
 ## Solution Documentation
-Check [report.md](./report.md)
+For methodolgy and results, check [report.md](./report.md)
 ## Get Started
 
 - clone project: `git clone https://github.com/aadhithya/beehive.git`
