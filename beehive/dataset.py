@@ -1,6 +1,5 @@
 import json
 import os
-import pdb
 
 import albumentations as Alb
 import numpy as np
