@@ -1,9 +1,9 @@
 # beehive: counting bees using AI.
 
-We want to count the number of bees flying around in order to monitor the hive. You are given a sample set of images
-of bees, along with ground truth labels containing dots at the centroids of each bee in the image. The goal of this
+We want to count the number of bees flying around in order to monitor the hive. The goal of this
 challenge is to automate the process of counting bees in a given image.
 
+beehive uses a slightly modified [Centernet](https://arxiv.org/pdf/1904.07850.pdf) to achieve this.
 ## Solution Documentation
 For methodolgy and results, check [report.md](./report.md)
 ## Get Started
@@ -13,10 +13,10 @@ For methodolgy and results, check [report.md](./report.md)
 ### Inference
 - `bee_counter.py` is a minimal inference script that runs inference using onnxruntime.
 - Insatll requirements: `pip install -r inference_requirements.txt`
-- run inference: `python bee_counter.py <image-path> --ckpt_path <ckpt-path> --show <bool>`
-- *NOTE:* The checkpoint is downloaded from github if not available locally. Check [Releases](https://github.com/aadhithya/beehive/releases/tag/weights) for checkpoints.
+- run inference: `python bee_counter.py <image-path> --ckpt_path <ckpt-path> --show True`
+- **NOTE:** The checkpoint is downloaded from github if not available locally. Check [Releases](https://github.com/aadhithya/beehive/releases/tag/weights) for checkpoints.
 
-### Training and Development
+## Training and Development
 In case you want to develop or train/evaluate/infer model you need to do the following:
 - install poetry: `pip install poetry`
 - install requirements: `poetry install`
@@ -27,13 +27,20 @@ In case you want to develop or train/evaluate/infer model you need to do the fol
 
 **NOTE:** using this method needs **python >= 3.9**
 
-#### Train Model
+### Download pre-trained weights
+- When you inference for the first time, the corresponding model weights are automatically downloaded to the current directory from github. : When using `python -m beehive infer ...` you need to specify the `--dl` flag to enable model download.
+
+- Models can be manually downloaded from the [Releases](https://github.com/aadhithya/beehive/releases/tag/weights).
+- **Only weights for the resnet18 backbone model is available.**
+
+
+### Train Model
 `python -m beehive train --help`
 
-#### Evaluate Model
+### Evaluate Model
 `python -m beehive eval --help`
 
-#### pytorch Inference
+### pytorch Inference
 `python -m beehive infer path/to/image --show`
 
 #### ONNX Export
