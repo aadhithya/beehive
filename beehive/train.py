@@ -4,6 +4,7 @@ import pytorch_lightning as pl
 import torch
 from loguru import logger
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from pytorch_lightning.callbacks.lr_monitor import LearningRateMonitor
 from torch.utils.data import DataLoader
 
 from beehive.dataset import BeehiveDataset, pad_collate_fn
@@ -75,14 +76,16 @@ def train_model(
 
     # early_stop_callback = EarlyStopping(
     #     monitor="val-loss",
-    #     min_delta=0.00,
+    #     min_delta=1e-3,
     #     patience=5,
     #     verbose=False,
-    #     mode="max",
+    #     mode="min",
+    #     strict=True,
     # )
 
+    lr_monitor_callback = LearningRateMonitor(logging_interval="epoch")
     trainer = pl.Trainer(
-        # callbacks=[early_stop_callback],
+        callbacks=[lr_monitor_callback],
         max_steps=epochs,
         log_every_n_steps=5,
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
