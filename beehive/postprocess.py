@@ -25,13 +25,16 @@ def hmap_nms(hmap, kernel_size: int = 3):
     return hmap * keep
 
 
-def postprocess_preds(hmap, offsets, threshold=0.5, scale=4):
+def postprocess_preds(
+    hmap, offsets, threshold=0.5, scale=4, ks=3, return_centers: bool = False
+):
     b, c, h, w = hmap.shape
-    scores = hmap_nms(hmap)
+    scores = hmap_nms(hmap, ks)
     pred_points = scores > threshold
 
     dilated_outs = []
     n_dets = []
+    pred_centers = []
     for ix in range(len(scores)):
         hmap_pred = torch.zeros(1, c, h * scale, w * scale)
         points = pred_points[ix, 0].nonzero()
@@ -46,4 +49,10 @@ def postprocess_preds(hmap, offsets, threshold=0.5, scale=4):
         )
         n_dets += [len(new_points)]
         dilated_outs += [dilated_pred]
+        pred_centers += [new_points.fliplr()]
+
+    if return_centers:
+        # * we reverse the last dim because we need xy coords.
+        stacked = torch.stack(pred_centers)
+        return stacked
     return torch.cat(dilated_outs, 0), torch.Tensor(n_dets)
