@@ -3,6 +3,7 @@ from typing import List, Optional
 from loguru import logger
 from typer import Argument, Option, Typer
 
+from beehive.inference import run_inference
 from beehive.train import train_model
 
 app = Typer(name="beehive")
@@ -71,13 +72,37 @@ def train(
 
 
 @app.command("eval", help="Evaluate a trained model.")
-def eval():
+def eval(
+    data_dir: str = Argument(..., help="path to data directory."),
+    split_file: str = Argument(..., help="path to splits json file."),
+    ckpt_path: str = Argument(..., help="Path to checkpoint to test."),
+):
     pass
 
 
 @app.command("infer", help="Run inference using a trained model.")
-def infer():
-    pass
+def infer(
+    image_path: str = Argument(
+        ..., help="Path to image to run inference on."
+    ),
+    show: Optional[bool] = Option(
+        False, help="If true, displays detections."
+    ),
+    ckpt_path: Optional[str] = Option(
+        "./ckpt/v38.ckpt", help="path to checkpoint."
+    ),
+    scale: Optional[float] = Option(
+        1.0, help="scale input to model to speed up inference."
+    ),
+    dl: Optional[bool] = Option(
+        False,
+        help="If set, downloads ckpt from github if not available locally.",
+    ),
+    v: Optional[bool] = Option(True, help="If true, enables verbos."),
+):
+    run_inference(
+        img_path=image_path, ckpt_path=ckpt_path, scale=scale, show=show, v=v
+    )
 
 
 if __name__ == "__main__":
