@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beehive"
-version = "0.0.0"
+version = "1.0.0"
 description = "Counting bees using AI."
 authors = ["Aadhithya <aadhithya.s@outlook.com>"]
 license = "MIT"

@@ -3,6 +3,7 @@ from typing import List, Optional
 from loguru import logger
 from typer import Argument, Option, Typer
 
+from beehive import __version__
 from beehive.eval import run_eval
 from beehive.inference import export_onnx, load_model, run_inference
 from beehive.train import train_model
@@ -118,6 +119,11 @@ def export(
     out_path: str = Argument(..., help="output path."),
 ):
     export_onnx(ckpt_path, out_path)
+
+
+@app.command("version", help="print version and quit.")
+def version():
+    print(f"beehive v{__version__}: counting bees using AI.")
 
 
 if __name__ == "__main__":
