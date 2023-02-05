@@ -13,7 +13,7 @@ For methodolgy and results, check [report.md](./report.md)
 ### Inference
 - `bee_counter.py` is a minimal inference script that runs inference using onnxruntime.
 - Insatll requirements: `pip install -r inference_requirements.txt`
-- run inference: `python bee_counter.py <image-path> --ckpt_path <ckpt-path> --show True`
+- run inference: `python bee_counter.py <image-path> --show True`
 - **NOTE:** The checkpoint is downloaded from github if not available locally. Check [Releases](https://github.com/aadhithya/beehive/releases/tag/weights) for checkpoints.
 
 ### Training and Development
