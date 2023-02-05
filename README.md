@@ -23,7 +23,7 @@ In case you want to develop or train/evaluate/infer model you need to do the fol
 
     **Note:** poetry install creates a new virtual env.
 - now that the environment is created, you are ready to go.
-- check installation: `python -m beehive --help`
+- check installation: `python -m beehive version`
 
 **NOTE:** using this method needs **python >= 3.9**
 
