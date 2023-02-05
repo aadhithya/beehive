@@ -3,7 +3,8 @@ from typing import List, Optional
 from loguru import logger
 from typer import Argument, Option, Typer
 
-from beehive.inference import export_onnx, run_inference
+from beehive.eval import run_eval
+from beehive.inference import export_onnx, load_model, run_inference
 from beehive.train import train_model
 
 app = Typer(name="beehive")
@@ -77,7 +78,7 @@ def eval(
     split_file: str = Argument(..., help="path to splits json file."),
     ckpt_path: str = Argument(..., help="Path to checkpoint to test."),
 ):
-    pass
+    run_eval(ckpt_path, data_dir, split_file)
 
 
 @app.command("infer", help="Run inference using a trained model.")
@@ -100,13 +101,11 @@ def infer(
     ),
     v: Optional[bool] = Option(True, help="If true, enables verbos."),
 ):
+    if not v:
+        logger.disable("beehive")
+    model = load_model(ckpt_path=ckpt_path, dl=dl)
     run_inference(
-        img_path=image_path,
-        ckpt_path=ckpt_path,
-        scale=scale,
-        show=show,
-        dl=dl,
-        v=v,
+        img_path=image_path, model=model, scale=scale, show=show, v=True
     )
 
 
