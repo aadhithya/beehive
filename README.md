@@ -8,6 +8,8 @@ challenge is to automate the process of counting bees in a given image.
 Check [report.md](./report.md)
 ## Get Started
 
+- clone project: `git clone https://github.com/aadhithya/beehive.git`
+
 ### Inference
 - `bee_counter.py` is a minimal inference script that runs inference using onnxruntime.
 - Insatll requirements: `pip install -r inference_requirements.txt`
