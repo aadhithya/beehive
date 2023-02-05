@@ -1,5 +1,6 @@
 import json
 import os
+import pdb
 
 import albumentations as Alb
 import numpy as np
@@ -39,7 +40,7 @@ class BeehiveDataset(Dataset):
         if do_transform:
             self.transform = Alb.Compose(
                 [
-                    # Alb.ColorJitter(),
+                    # Alb.GaussianBlur(blur_limit=(1, 3)),
                     Alb.RandomScale(scale_limit=[-0.4, 0.4]),
                     Alb.RandomCrop(height=256, width=256),
                     Alb.Flip(),
@@ -49,13 +50,7 @@ class BeehiveDataset(Dataset):
                 keypoint_params=Alb.KeypointParams(format="xy"),
             )
         else:
-            self.transform = Alb.ToTensor(
-                normalize={
-                    "mean": [0.485, 0.456, 0.406],
-                    "std": [0.229, 0.224, 0.225],
-                }
-            )
-
+            self.transform = Alb.Compose([Alb.Normalize(), ToTensorV2()])
         self.down_stride = 4
 
     def __load_split_ids(self, split_json: str, split: str):
@@ -103,14 +98,16 @@ class BeehiveDataset(Dataset):
         centers_ds = centers / self.down_stride
         # * centers_ds_int --> floor(p/R) --> \tilde(p)
         centers_ds_int = centers_ds.astype(np.int32)
-        centers_ds_int[:, 0] = np.clip(centers_ds_int[:, 0], 0, lbl_h - 1)
-        centers_ds_int[:, 1] = np.clip(centers_ds_int[:, 1], 0, lbl_w - 1)
 
-        for ix in range(len(centers_ds_int)):
-            heat_map[0] = draw_umich_gaussian(
-                heat_map[0], centers_ds_int[ix], radius=2
-            )
-            # heat_map = draw_msra_gaussian(heat_map, centers_ds[ix][::-1], 0.1)
+        if len(centers_ds_int) > 0:
+            centers_ds_int[:, 0] = np.clip(centers_ds_int[:, 0], 0, lbl_h - 1)
+            centers_ds_int[:, 1] = np.clip(centers_ds_int[:, 1], 0, lbl_w - 1)
+
+            for ix in range(len(centers_ds_int)):
+                heat_map[0] = draw_umich_gaussian(
+                    heat_map[0], centers_ds_int[ix], radius=2
+                )
+                # heat_map = draw_msra_gaussian(heat_map, centers_ds[ix][::-1], 0.1)
 
         heat_map = torch.from_numpy(heat_map)
         return img, heat_map, centers_ds
@@ -129,6 +126,7 @@ def pad_collate_fn(data):
     new_centers = torch.ones(batch_size, max_len, 2) * -1
 
     for ix, cen in enumerate(centers):
-        new_centers[ix, : len(cen)] = torch.from_numpy(cen)
+        if len(cen):
+            new_centers[ix, : len(cen)] = torch.from_numpy(cen)
 
     return img, heatmap, new_centers
