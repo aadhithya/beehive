@@ -3,10 +3,10 @@ import urllib.request
 from typing import Optional, Tuple
 
 import albumentations as A
+import matplotlib.pyplot as plt
 import torch
 from albumentations.pytorch import ToTensorV2
 from loguru import logger
-from PIL import Image
 from skimage import io
 from skimage.transform import rescale
 from torchvision.utils import draw_segmentation_masks
@@ -18,7 +18,7 @@ TRCH_MODEL_URL = "https://github.com/aadhithya/beehive/releases/download/weights
 MODEL_DL_PATH = "./ckpt/centernet-bees.ckpt"
 
 
-def show_result(img, mask, scale):
+def show_result(img, mask, scale, n_det):
     if scale != 1:
         mask = rescale(mask, scale)
         logger.info(f"Mask Scale Factor: {scale}")
@@ -38,8 +38,10 @@ def show_result(img, mask, scale):
         .numpy()
     )
 
-    viz_img = Image.fromarray(viz_img)
-    viz_img.show()
+    plt.imshow(viz_img)
+    plt.title(f"Bee Detections: {int(n_det)} Bees")
+    plt.axis("off")
+    plt.show()
 
 
 def get_inference_transforms(img_size: Tuple[int, int, int], scale: int):
@@ -71,21 +73,7 @@ def get_inference_transforms(img_size: Tuple[int, int, int], scale: int):
     return transforms, 1 / scale
 
 
-def run_inference(
-    img_path: str,
-    ckpt_path: Optional[str] = "./ckpt/v38.ckpt",
-    scale: Optional[float] = 1.0,
-    show: Optional[bool] = True,
-    dl: Optional[bool] = False,
-    v: Optional[bool] = True,
-):
-    if not v:
-        logger.disable("beehive")
-    assert os.path.exists(img_path), "Image does not exist!"
-    img = io.imread(img_path)
-    logger.info(f"Loaded Image: {img_path}")
-    logger.info(f"image shape: {img.shape}")
-
+def load_model(ckpt_path: str, dl: bool = False):
     if not os.path.exists(ckpt_path):
         logger.warning(f"Checkpoint does not exist in {ckpt_path}.")
         if dl:
@@ -105,6 +93,20 @@ def run_inference(
     model = CenterNet.load_from_checkpoint(checkpoint_path=ckpt_path)
     _ = model.eval()
     logger.info(f"Loaded model from ckpt: {ckpt_path}")
+    return model
+
+
+def run_inference(
+    img_path: str,
+    model: torch.nn.Module,
+    scale: Optional[float] = 1.0,
+    show: Optional[bool] = False,
+    v: Optional[bool] = True,
+):
+    assert os.path.exists(img_path), "Image does not exist!"
+    img = io.imread(img_path)
+    logger.info(f"Loaded Image: {img_path}")
+    logger.info(f"image shape: {img.shape}")
 
     transforms, scale = get_inference_transforms(img.shape, scale)
     with torch.no_grad():
@@ -112,15 +114,13 @@ def run_inference(
         hmap_pred, offsets = model(input_img.unsqueeze(0).to(model.device))
 
     mask, n_dets = postprocess_preds(hmap_pred.cpu(), offsets.cpu())
-
-    print(
-        f"\033[94m\033[1mNumber of bees in the image: {int(n_dets[0])}\033[0m"
-    )
-
+    if v:
+        print(
+            f"\033[94m\033[1mNumber of bees in the image: {int(n_dets[0])}\033[0m"
+        )
     if show:
-        show_result(img, mask.squeeze().numpy(), scale)
-
-    return
+        show_result(img, mask.squeeze().numpy(), scale, n_dets[0])
+    return mask, n_dets
 
 
 def export_onnx(ckpt_path: str, out_path: str):
