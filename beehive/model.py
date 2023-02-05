@@ -55,7 +55,7 @@ class CenterNet(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
         scheduler = torch.optim.lr_scheduler.StepLR(
-            optimizer=optimizer, step_size=750, step_size=0.5
+            optimizer=optimizer, step_size=1000, gamma=0.25
         )
         return [optimizer], [scheduler]
 
