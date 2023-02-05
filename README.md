@@ -15,12 +15,25 @@ challenge is to automate the process of counting bees in a given image.
 ### 2.1. Network Architecture and Objective Functions
 Here, I talk about the network archtecture and the reasons behind selecting the arch. I also discuss the objective functions and how this implementation differs from the original paper.
 
+- For the backbone, in the interest of keepint the model small, I use the pre-trained resnet 18 model. The paper uses Hourglass and resnet architectures.
+
+- Then we have 3 upsampling blocks with 3 conv-bn-relu layer followed by an upsampling layer. The output is at stride 4 as with the original paper. For simplicity, I use convolution layers compared to the one deformable convolution layer used in the paper.
+
+- Then I have a KeypointHead, with 2 conv-bn-relu layers followed by a 1x1 convolution layer to output `n_classes + 2` channels, for n_classes and the x-y offsets. The paper uses separate heads for both and also have extra heads for bbox regression.
+
+#### Objective Functions
+- For the focal loss, I set `alpha = 7` and `beta = 5`.
+- The focal loss is weighed at 10 compared to 1 used in the paper.
+- I use L1 loss for the OffsetLoss, same as the paper.
+
 ### 2.2 Results
 results here
 #### 2.2.1 Training Results
 Training results and loss curves.
 #### 2.2.2 Evaluation Results
-Evaluation Results here.
+I evaluate the model on the following metrics:
+- Accuracy: (# detections / # bees)
+
 
 
 
