@@ -15,8 +15,8 @@ def train(
     data_dir: str = Argument(..., help="path ot data dir."),
     split_file: str = Argument(..., help="path to data split json."),
     batch_size: Optional[int] = Option(8, help="batch size to use."),
-    epochs: Optional[int] = Option(
-        10, help="Max number of epochs to train for."
+    steps: Optional[int] = Option(
+        10, help="Max number of steps to train for."
     ),
     # * model params
     n_classes: Optional[int] = Option(1, help="number of object classes."),
@@ -67,7 +67,7 @@ def train(
         lamda_offset,
         alpha_kp,
         beta_kp,
-        epochs,
+        steps,
     )
 
 
@@ -101,7 +101,12 @@ def infer(
     v: Optional[bool] = Option(True, help="If true, enables verbos."),
 ):
     run_inference(
-        img_path=image_path, ckpt_path=ckpt_path, scale=scale, show=show, v=v
+        img_path=image_path,
+        ckpt_path=ckpt_path,
+        scale=scale,
+        show=show,
+        dl=dl,
+        v=v,
     )
 
 

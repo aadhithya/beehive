@@ -30,7 +30,7 @@ def train_model(
     lamda_offset: Optional[float] = 1.0,
     alpha_kp: Optional[int] = 2,
     beta_kp: Optional[int] = 2,
-    epochs: Optional[int] = 10,
+    steps: Optional[int] = 10,
 ):
     pl.seed_everything(42)
     logger.info("Seed set...")
@@ -86,7 +86,7 @@ def train_model(
     lr_monitor_callback = LearningRateMonitor(logging_interval="epoch")
     trainer = pl.Trainer(
         callbacks=[lr_monitor_callback],
-        max_steps=epochs,
+        max_steps=steps,
         log_every_n_steps=5,
         accelerator="gpu" if torch.cuda.is_available() else "cpu",
     )
