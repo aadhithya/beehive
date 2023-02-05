@@ -3,7 +3,7 @@ from typing import List, Optional
 from loguru import logger
 from typer import Argument, Option, Typer
 
-from beehive.inference import run_inference
+from beehive.inference import export_onnx, run_inference
 from beehive.train import train_model
 
 app = Typer(name="beehive")
@@ -103,6 +103,17 @@ def infer(
     run_inference(
         img_path=image_path, ckpt_path=ckpt_path, scale=scale, show=show, v=v
     )
+
+
+@app.command(
+    "export-onnx",
+    help="Export model to ONNX to be independent of project dependencies.",
+)
+def export(
+    ckpt_path: str = Argument(..., help="Checkpoint to export."),
+    out_path: str = Argument(..., help="output path."),
+):
+    export_onnx(ckpt_path, out_path)
 
 
 if __name__ == "__main__":

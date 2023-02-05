@@ -100,3 +100,22 @@ def run_inference(
         show_result(img, mask.squeeze().numpy(), scale)
 
     return
+
+
+def export_onnx(ckpt_path: str, out_path: str):
+    model = CenterNet.load_from_checkpoint(checkpoint_path=ckpt_path)
+    _ = model.eval()
+    logger.info(f"Loaded model from ckpt: {ckpt_path}")
+
+    input_image = torch.randn(1, 3, 256, 256)
+    dynamic_axes = {"img": [2, 3], "hmap": [2, 3], "offsets": [2, 3]}
+
+    model.to_onnx(
+        out_path,
+        input_image,
+        input_names=["img"],
+        output_names=["hmap", "offsets"],
+        dynamic_axes=dynamic_axes,
+    )
+
+    logger.success(f"Model Exported to Onnx: {out_path}")
