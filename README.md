@@ -16,8 +16,10 @@ For methodolgy and results, check [report.md](./report.md)
 - run inference: `python bee_counter.py <image-path> --ckpt_path <ckpt-path> --show True`
 - **NOTE:** The checkpoint is downloaded from github if not available locally. Check [Releases](https://github.com/aadhithya/beehive/releases/tag/weights) for checkpoints.
 
-## Training and Development
+### Training and Development
 In case you want to develop or train/evaluate/infer model you need to do the following:
+
+### Set up using poetry
 - install poetry: `pip install poetry`
 - install requirements: `poetry install`
 
@@ -26,6 +28,14 @@ In case you want to develop or train/evaluate/infer model you need to do the fol
 - check installation: `python -m beehive version`
 
 **NOTE:** using this method needs **python >= 3.9**
+
+(or)
+
+### Set up using pip
+- install requirements: `pip install -r requirements.txt`
+- install beehive in edit mode: `pip install -e .`
+- check installation: `python -m beehive version`
+
 
 ### Download pre-trained weights
 - When you inference for the first time, the corresponding model weights are automatically downloaded to the current directory from github. : When using `python -m beehive infer ...` you need to specify the `--dl` flag to enable model download.
