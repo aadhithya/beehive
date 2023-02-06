@@ -36,8 +36,11 @@ Here, I talk about the network archtecture and the reasons behind selecting the 
 
 **NOTE**: Network inference was done on entire, full-res image without augmentations.
 
-![](imgs/test_0.png)
-![](imgs/test_1.png)
+<img src="imgs/test_0.png" width="600px"/></br>
+
+<img src="imgs/test_1.png" width="600px"/>
+
+
 ### 3.2 Quantitative Results
 - Model evaluated using mAP metric. Table shows results.
 - Since only centroids of the bees are known, a fixed bounding box of size 15x15 with the centroid at center was taken.
@@ -93,8 +96,10 @@ upsample_channels:
 ### 5.3 Training Curves
 #### Train loss
 
-  ![Train Loss](imgs/train-loss-plot.png)
+<img src=imgs/train-loss-plot.png width="300px"/>
+
 #### Validation loss
 
-  ![Validation Loss](imgs/val-loss-plot.png)
+<img src=imgs/val-loss-plot.png width="300px"/>
+
 ****

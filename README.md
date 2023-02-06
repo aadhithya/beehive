@@ -5,7 +5,7 @@ challenge is to automate the process of counting bees in a given image.
 
 beehive uses a slightly modified [Centernet](https://arxiv.org/pdf/1904.07850.pdf) to achieve this.
 ## Solution Documentation
-For methodolgy and results, check [report.md](./report.md)
+For methodolgy and results, check [report.md](./report.md) or [report.pdf](./report.pdf)
 ## Get Started
 
 - clone project: `git clone https://github.com/aadhithya/beehive.git`
