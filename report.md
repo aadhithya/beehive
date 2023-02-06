@@ -1,5 +1,6 @@
 # beehive: counting bees using AI
 
+
 We want to count the number of bees flying around in order to monitor the hive. You are given a sample set of images
 of bees, along with ground truth labels containing dots at the centroids of each bee in the image. The goal of this
 challenge is to automate the process of counting bees in a given image.
