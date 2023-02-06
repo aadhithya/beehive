@@ -46,6 +46,7 @@ In case you want to develop or train/evaluate/infer model you need to do the fol
 
 ### Train Model
 `python -m beehive train --help`
+The `splits.json` file contains the dataset splits.
 
 ### Evaluate Model
 `python -m beehive eval --help`
