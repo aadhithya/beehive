@@ -32,6 +32,26 @@ def train_model(
     beta_kp: Optional[int] = 2,
     steps: Optional[int] = 10,
 ):
+    """creates and trains a model.
+
+    Args:
+        data_dir (str): data directort containing the gt-dots and img folder.
+        split_file (str): path to json file with train-val-test splits.
+        batch_size (Optional[int], optional): batch size. Defaults to 8.
+        n_classes (Optional[int], optional): number of types of objects. Defaults to 1.
+        n_conv (Optional[int], optional): number of convs in each upsample block. Defaults to 2.
+        head_convs (Optional[int], optional): number of convs in keypoint head. Defaults to 2.
+        upsample_channels (Optional[List[int]], optional): upsample out channels. Defaults to [256, 128, 64].
+        bilinear (Optional[bool], optional): if true, use bilinear interpolation. Defaults to True.
+        backbone (Optional[str], optional): backbone to use. options: [r18, r34]. Defaults to "r18".
+        pretrained (Optional[bool], optional): if true, use pretrained backbone. Defaults to True.
+        lr (Optional[float], optional): lr for training. Defaults to 5e-4.
+        lamda_kp (Optional[float], optional): keypoint loss weight. Defaults to 1.0.
+        lamda_offset (Optional[float], optional): offset loss weight. Defaults to 1.0.
+        alpha_kp (Optional[int], optional): focal loss alpha. Defaults to 2.
+        beta_kp (Optional[int], optional): focal loss beta. Defaults to 2.
+        steps (Optional[int], optional): max number of steps to train for. Defaults to 10.
+    """
     pl.seed_everything(42)
     logger.info("Seed set...")
     logger.info("Creating model...")

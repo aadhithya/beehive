@@ -27,6 +27,19 @@ def hmap_nms(hmap, kernel_size: int = 3):
 def postprocess_preds(
     hmap, offsets, threshold=0.5, scale=4, ks=3, return_centers: bool = False
 ):
+    """post process predictions to get masks and n dets.
+
+    Args:
+        hmap (torch.Tensor): heat map predictions from net.
+        offsets (torch.TEnsor): offsets predicted by net.
+        threshold (float, optional): score threshold. Defaults to 0.5.
+        scale (int, optional): scale factor to scale scores. Defaults to 4.
+        ks (int, optional): kernel size to calculate scores. Defaults to 3.
+        return_centers (bool, optional): if true returns new centers. Defaults to False.
+
+    Returns:
+        Union[Tuple[torch.Tensor, torch.Tensor], torch.Tensor]: masks and n detes or centers.
+    """
     b, c, h, w = hmap.shape
     scores = hmap_nms(hmap, ks)
     pred_points = scores > threshold

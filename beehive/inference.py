@@ -18,7 +18,17 @@ TRCH_MODEL_URL = "https://github.com/aadhithya/beehive/releases/download/weights
 MODEL_DL_PATH = "./ckpt/centernet-bees.ckpt"
 
 
-def show_result(img, mask, scale, n_det):
+def show_result(
+    img: torch.Tensor, mask: torch.Tensor, scale: int, n_det: int
+):
+    """Displays detection result.
+
+    Args:
+        img (torch.Tensor): image
+        mask (torch.Tensor): mask
+        scale (int): scale factor
+        n_det (int): number of detections
+    """
     if scale != 1:
         mask = rescale(mask, scale)
         logger.info(f"Mask Scale Factor: {scale}")
@@ -44,7 +54,18 @@ def show_result(img, mask, scale, n_det):
     plt.show()
 
 
-def get_inference_transforms(img_size: Tuple[int, int, int], scale: int):
+def get_inference_transforms(
+    img_size: Tuple[int, int, int], scale: int
+) -> A.Compose:
+    """returns transforms for inference.
+
+    Args:
+        img_size (Tuple[int, int, int]): image size HxWxC format.
+        scale (int): scale factor.
+
+    Returns:
+        A.Compose: transforms for inference.
+    """
     h, w, _ = img_size
 
     if h * scale < 256 or w * scale < 256:
@@ -73,7 +94,19 @@ def get_inference_transforms(img_size: Tuple[int, int, int], scale: int):
     return transforms, 1 / scale
 
 
-def load_model(ckpt_path: str, dl: bool = False):
+def load_model(ckpt_path: str, dl: bool = False) -> torch.nn.Module:
+    """loads model from checkpoint. Downloads checkpoint if set.
+
+    Args:
+        ckpt_path (str): checkpoint path.
+        dl (bool, optional): if true, downloads model if not available locally. Defaults to False.
+
+    Raises:
+        FileNotFoundError: if file is not found.
+
+    Returns:
+        torch.nn.Module: model for inference.
+    """
     if not os.path.exists(ckpt_path):
         logger.warning(f"Checkpoint does not exist in {ckpt_path}.")
         if dl:
@@ -102,7 +135,19 @@ def run_inference(
     scale: Optional[float] = 1.0,
     show: Optional[bool] = False,
     v: Optional[bool] = True,
-):
+) -> Tuple[torch.Tensor, torch.Tensor]:
+    """runs inference on the image and returns mask and num detections.
+
+    Args:
+        img_path (str): image path.
+        model (torch.nn.Module): model.
+        scale (Optional[float], optional): scale factor. Defaults to 1.0.
+        show (Optional[bool], optional): if true, displays detections. Defaults to False.
+        v (Optional[bool], optional): if true, prints output. Defaults to True.
+
+    Returns:
+        Tuple[torch.Tensor, torch.Tensor]: mask and detections.
+    """
     assert os.path.exists(img_path), "Image does not exist!"
     img = io.imread(img_path)
     logger.info(f"Loaded Image: {img_path}")
@@ -124,6 +169,12 @@ def run_inference(
 
 
 def export_onnx(ckpt_path: str, out_path: str):
+    """exports model to onnx
+
+    Args:
+        ckpt_path (str): checkpoint path
+        out_path (str): output path
+    """
     model = CenterNet.load_from_checkpoint(checkpoint_path=ckpt_path)
     _ = model.eval()
     logger.info(f"Loaded model from ckpt: {ckpt_path}")

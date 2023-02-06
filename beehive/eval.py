@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from pprint import pprint
-from typing import Tuple
+from typing import Dict, List, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -16,7 +16,17 @@ from beehive.postprocess import hmap_nms, postprocess_preds
 
 def centers_to_bbox(
     centers: torch.Tensor, mask_size: Tuple[int, int], det_size: int = 15
-):
+) -> torch.Tensor:
+    """converts centers to bounding boxes.
+
+    Args:
+        centers (torch.Tensor): detection centers.
+        mask_size (Tuple[int, int]): image size HxW.
+        det_size (int, optional): box size to use. Defaults to 15.
+
+    Returns:
+        torch.Tensor: BxNx4 bounding boxes centered around centers.
+    """
     boxes = []
     sz = (det_size - 1) // 2
     for center in centers:
@@ -44,7 +54,17 @@ def centers_to_bbox(
 
 def centers_to_mask(
     centers: torch.Tensor, mask_size: Tuple[int, int], det_size: int = 15
-):
+) -> torch.Tensor:
+    """converts centers to detection masks.
+
+    Args:
+        centers (torch.Tensor): centers
+        mask_size (Tuple[int, int]): size of segmentation mask.
+        det_size (int, optional): size of each detection. Defaults to 15.
+
+    Returns:
+        torch.Tensor: BxMaskSize masks.
+    """
     # return BHW
     masks = []
     weights = torch.ones(1, 1, det_size, det_size)
@@ -65,7 +85,18 @@ def centers_to_mask(
 @torch.no_grad()
 def get_predictions(
     model: torch.nn.Module, data_dir: str, splits_path: str, thr: float = 0.0
-):
+) -> Tuple[List[Dict], List[Dict]]:
+    """runs inference and returns predictions and targets in the required format.
+
+    Args:
+        model (torch.nn.Module): model
+        data_dir (str): data directory.
+        splits_path (str): path to splits.json file.
+        thr (float, optional): threshold. Defaults to 0.0.
+
+    Returns:
+        Tuple[List[Dict], List[Dict]]: predictions and targets.
+    """
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dataset = BeehiveDataset(data_dir, splits_path, "test", False)
     test_dataloader = DataLoader(dataset, 1, False, collate_fn=pad_collate_fn)
@@ -121,6 +152,14 @@ def get_predictions(
 def run_eval(
     ckpt_path: str, data_dir: str, splits_path: str, out_path: str = None
 ):
+    """runs evaluation and generates metrics.
+
+    Args:
+        ckpt_path (str): checkpoint path.
+        data_dir (str): data dir.
+        splits_path (str): path to splits json file.
+        out_path (str, optional): out path to save metrics. Defaults to None.
+    """
     model = load_model(ckpt_path)
     predictions, targets, _, abs_err = get_predictions(
         model, data_dir, splits_path

@@ -16,7 +16,6 @@ class ModifiedFocalLoss:
     def __call__(self, target, preds) -> torch.Tensor:
         pos_idxs = (target == 1).float()
         neg_idxs = (target == 0).float()
-
         preds = torch.clamp(preds, 1e-10)
 
         preds_compl = 1 - preds
@@ -66,7 +65,6 @@ class OffsetLoss:
 
         loss = F.l1_loss(o_hats, offset, reduction="none")
         loss = (loss * mask).sum()
-
         if mask.sum():
             # * we divide mask sum by 2 because it is active for both x and
             # * y coords. we just need number of center points in batch.
