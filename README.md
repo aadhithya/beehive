@@ -1,5 +1,7 @@
 # beehive: counting bees using AI.
 
+![](imgs/test_0.png)
+
 We want to count the number of bees flying around in order to monitor the hive. The goal of this
 challenge is to automate the process of counting bees in a given image.
 
